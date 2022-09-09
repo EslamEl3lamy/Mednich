@@ -350,7 +350,11 @@
                     error.insertBefore($('#steps-form .actions'));
                 }
             },
-            debug: true,
+            submitHandler: function(form) {
+                // do other things for a valid form
+                if (stepsForm.valid())
+                    form.submit();
+            }
         });
 
         stepsForm.steps({
@@ -375,7 +379,6 @@
                             "Start My Free Assessment"
                         );
                     }
-                    $( "#steps-form" ).first().submit();
 
                     // $('#steps-form .actions ul li>a[href="#finish"]').attr('id', "example1");
                 }
@@ -383,9 +386,9 @@
             },
 
             onFinishing: function(event, currentIndex) {
-                // alert("Please, choose an option");
-                stepsForm.validate().settings.ignore = ":disabled";
-                return stepsForm.valid();
+                if (stepsForm.valid()) {
+                    stepsForm.submit();
+                }
             },
         });
 
@@ -489,33 +492,35 @@
     });
 
     // Cookies
-    $.gdprcookie.init({
-        title: "🍪 Accept cookies & privacy policy?",
-        message: "Cookies enable you to personalize your experience on our sites, tell us which parts of our websites people have visited, help us measure the effectiveness of ads and web searches, and give us insights into user behaviour so we can improve our communications and products. Click the <strong>accept</strong> button below to see the optional callback in action… <a href=https://www.jqueryscript.net/privacy/>privacy link</a>",
-        delay: 6000,
-        expires: 30,
-        acceptBtnLabel: "Accept cookies",
-        customShowMessage: undefined,
-        customHideMessage: undefined,
-        customShowChecks: undefined
-    });
+    try {
+        if (!localStorage.getItem('cookieAccepted')) {
+            $.gdprcookie.init({
+                title: "🍪 Accept cookies & privacy policy?",
+                message: "Cookies enable you to personalize your experience on our sites, tell us which parts of our websites people have visited, help us measure the effectiveness of ads and web searches, and give us insights into user behaviour so we can improve our communications and products. Click the <strong>accept</strong> button below to see the optional callback in action… <a href=https://www.jqueryscript.net/privacy/>privacy link</a>",
+                delay: 6000,
+                expires: 30,
+                acceptBtnLabel: "Accept cookies",
+                customShowMessage: undefined,
+                customHideMessage: undefined,
+                customShowChecks: undefined
+            });
+        }
 
-    $(document.body)
-        .on("gdpr:show", function() {
-            console.log("Cookie dialog is shown");
-        })
-        .on("gdpr:accept", function() {
-            var preferences = $.gdprcookie.preference();
-            console.log("Preferences saved:", preferences);
-        })
-        .on("gdpr:advanced", function() {
-            console.log("Advanced button was pressed");
-        });
+        $(document.body)
+            .on("gdpr:show", function() {
+                console.log("Cookie dialog is shown");
+            })
+            .on("gdpr:accept", function() {
+                var preferences = $.gdprcookie.preference();
+                localStorage.setItem('cookieAccepted', JSON.stringify(preferences))
+            })
+            .on("gdpr:advanced", function() {
+                console.log("Advanced button was pressed");
+            });
 
-    if ($.gdprcookie.preference("marketing") === true) {
-        console.log("This should run because marketing is accepted.");
-    }
-    // $.gdprcookie.init();
-    
+        if ($.gdprcookie.preference("marketing") === true) {
+            console.log("This should run because marketing is accepted.");
+        }
+    } catch (e) {}
 
 })(jQuery);
