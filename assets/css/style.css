@@ -1213,8 +1213,8 @@ ul {
 ----------------------------------------------*/
 
 .navbar-top {
-    padding: 13px 0 4px 0;
-    background: #0A1851;
+    padding: 8px 0 8px 0;
+    background: #030b2b;
 }
 
 .navbar-top ul {
@@ -1273,6 +1273,9 @@ ul {
 
 .navbar-top .topbar-right li:last-child {
     border-right: 0;
+}
+.navbar-top img {
+    height: 200px;
 }
 
 .navbar-area {
